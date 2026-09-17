@@ -18,17 +18,18 @@ if (!API_KEY) {
 }
 
 /**
- * Fetches the full Migros CH product catalog.
+ * Fetches the Migros CH products currently on promotion. /catalog with
+ * promo_only returns only the discounted range, for a third of the full price.
  */
-async function fetchMigrosCatalog() {
-  console.log('Fetching Migros CH catalog...');
+async function fetchMigrosPromotions() {
+  console.log('Fetching Migros CH promotions...');
   const response = await fetch(`${API_BASE}/catalog`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${API_KEY}`,
     },
-    body: JSON.stringify({ supermarket_domain: 'migros.ch' }),
+    body: JSON.stringify({ supermarket_domain: 'migros.ch', promo_only: true }),
   });
 
   if (!response.ok) {
@@ -41,11 +42,9 @@ async function fetchMigrosCatalog() {
 }
 
 /**
- * Filters the catalog to only items with promo: true.
- * Returns an array sorted by promo_percentage descending.
- *
- * The catalog includes a promo_percentage field when available;
- * if it's absent we skip that product in the sorted output.
+ * Flattens the promoted items into an array sorted by expiry, then price.
+ * The promo check is a guard: with promo_only set, every product in the
+ * response should already be on offer.
  */
 function extractPromos(catalog) {
   const promos = [];
@@ -147,14 +146,11 @@ function formatEmailBody(promos, fetchedAt) {
 async function main() {
   console.log('=== Migros CH Promotions Scanner ===\n');
 
-  const catalog = await fetchMigrosCatalog();
-  console.log(`Catalog returned ${Object.keys(catalog).length} total products.\n`);
-
-  const promos = extractPromos(catalog);
+  const promos = extractPromos(await fetchMigrosPromotions());
   const fetchedAt = new Date().toISOString().slice(0, 10);
 
   if (promos.length === 0) {
-    console.log('No promotions found in today\'s catalog snapshot. Try again later.');
+    console.log('No promotions found in today\'s snapshot. Try again later.');
     return;
   }
 

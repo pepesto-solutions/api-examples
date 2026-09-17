@@ -7,9 +7,9 @@
  * Run: node waitrose-promotions-scanner.js
  * Requires: PEPESTO_API_KEY env var
  *
- * Note: /api/catalog returns a full product snapshot. It is an expensive call
- * (counted separately from other endpoints) and is designed for batch jobs,
- * not real-time lookups. Run it once, cache the result, filter locally.
+ * Note: /api/catalog with promo_only returns only the products on offer, for
+ * a third of the full catalog price. It is still a bulk call designed for
+ * batch jobs, not real-time lookups. Run it once and cache the result.
  */
 
 const API_BASE = 'https://s.pepesto.com/api';
@@ -25,13 +25,13 @@ if (!API_KEY) {
 }
 
 /**
- * Fetch the full Waitrose product catalog via /api/catalog.
+ * Fetch the Waitrose products currently on promotion via /api/catalog.
  * Returns a map of product URL → product object.
  *
  * @returns {Promise<object>} parsed_products map
  */
-async function fetchWaitroseCatalog() {
-  console.log('Fetching Waitrose catalog (this may take a few seconds)...');
+async function fetchWaitrosePromotions() {
+  console.log('Fetching Waitrose promotions (this may take a few seconds)...');
 
   const response = await fetch(`${API_BASE}/catalog`, {
     method: 'POST',
@@ -41,6 +41,7 @@ async function fetchWaitroseCatalog() {
     },
     body: JSON.stringify({
       supermarket_domain: 'waitrose.com',
+      promo_only: true,
     }),
   });
 
@@ -65,8 +66,9 @@ function formatQuantity(quantity) {
 }
 
 /**
- * Filter the catalog to only promoted items, then sort by promo_percentage
- * descending so the biggest discounts come first.
+ * Flatten the promoted items and sort by promo_percentage descending so the
+ * biggest discounts come first. The promo check is a guard: with promo_only
+ * set, every product in the response should already be on offer.
  *
  * @param {object} products - parsed_products map
  * @returns {Array<object>} sorted promotion entries
@@ -103,13 +105,10 @@ function formatGBP(pence) {
 }
 
 /**
- * Main: pull the catalog, surface every promotion sorted by % saved.
+ * Main: pull the promotions, surface every one sorted by % saved.
  */
 async function main() {
-  const products = await fetchWaitroseCatalog();
-
-  const total = Object.keys(products).length;
-  console.log(`  Catalog loaded: ${total} products\n`);
+  const products = await fetchWaitrosePromotions();
 
   const promotions = extractPromotions(products);
   console.log(`  Products on promotion: ${promotions.length}\n`);
