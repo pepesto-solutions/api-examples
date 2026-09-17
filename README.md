@@ -51,7 +51,7 @@ node supermarkets/tesco-recipe-to-cart-oneshot.js
 | File | Purpose |
 |------|---------|
 | `utils/format-currency.js` | Format Pepesto price integers to readable strings (EUR, GBP, CHF, NOK, PLN, BGN) |
-| `utils/find-promotions.js` | Extract and sort promoted products from a `/api/catalog` or `/api/promotions` response |
+| `utils/find-promotions.js` | Extract and sort promoted products from a `/api/catalog` response |
 | `getting-started/get-api-key.js` | Request an API key via /api/link and check your credit balance |
 
 ## License
