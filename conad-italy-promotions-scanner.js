@@ -24,20 +24,20 @@ const headers = {
 /**
  * Fetches every Conad product that is currently on promotion, as a flat list.
  *
- * /promotions and /catalog answer in the same shape: a parsed_products object
- * keyed by the product's page URL. /catalog returns the whole indexed range,
- * /promotions only the discounted part of it, which is all this script wants
- * and costs a third of the price.
+ * /catalog answers with a parsed_products object keyed by the product's page
+ * URL. Without promo_only it returns the whole indexed range; with promo_only
+ * set it returns only the discounted part, which is all this script wants and
+ * costs a third of the price.
  */
 // #region fetch-promotions
 async function fetchConadPromotions() {
   console.log('Fetching Conad promotions...');
-  const res = await fetch(`${BASE_URL}/promotions`, {
+  const res = await fetch(`${BASE_URL}/catalog`, {
     method: 'POST',
     headers,
-    body: JSON.stringify({ supermarket_domain: 'spesaonline.conad.it' }),
+    body: JSON.stringify({ supermarket_domain: 'spesaonline.conad.it', promo_only: true }),
   });
-  if (!res.ok) throw new Error(`/promotions failed: ${res.status}`);
+  if (!res.ok) throw new Error(`/catalog failed: ${res.status}`);
   const data = await res.json();
   return Object.entries(data.parsed_products ?? {}).map(([url, product]) => ({ url, ...product }));
 }
