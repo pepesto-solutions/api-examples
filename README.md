@@ -45,6 +45,7 @@ node supermarkets/tesco-recipe-to-cart-oneshot.js
 | 24 | 🇵🇱 PL | Auchan PL | [`auchan-pl-price-tracker-weekly.js`](auchan-pl-price-tracker-weekly.js) | [auchan-pl](https://pepesto.com/built-with-pepesto/auchan-pl/) |
 | 25 | 🇧🇬 BG | Bulmag | [`bulmag-bg-first-integration.js`](bulmag-bg-first-integration.js) | [bulmag](https://pepesto.com/built-with-pepesto/bulmag/) |
 | 26 | 🇧🇬 BG | eBag | [`ebag-vs-bulmag-bg-price-comparison.js`](ebag-vs-bulmag-bg-price-comparison.js) | [ebag](https://pepesto.com/built-with-pepesto/ebag/) |
+| 27 | 🇵🇹 PT | Continente | [`continente-staples-price-watch.js`](continente-staples-price-watch.js) | [continente](https://pepesto.com/built-with-pepesto/continente/) |
 
 ## Utilities
 
